@@ -4,7 +4,8 @@ const foodSchema = new mongoose.Schema({
     name: String,
     price: Number,
     amount: Number,
-    descriptions: String
+    descriptions: String,
+    image: String
 });
 
 const Food = mongoose.model("Food", foodSchema)

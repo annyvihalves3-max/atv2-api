@@ -1,5 +1,5 @@
 import express from "express";
-import mongoose from "mongoose";
+import mongoose from "./config/db-connection.js";
 import Food from "./models/Food.js";
 import User from "./models/User.js";
 import Restaurant from "./models/Restaurant.js";
