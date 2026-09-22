@@ -36,7 +36,7 @@ const loginUser = async (req, res) => {
                         }
                     });
                 } else {
-                    res.status(401).json({ error: 'Senha incorreta..' });
+                    res.status(401).json({ error: 'Senha incorreta.' });
                 }
             } else {
                 res.status(404).json({ error: 'Usuário não encontrado.' });
