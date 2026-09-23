@@ -1,6 +1,6 @@
 import foodService from "../services/foodService.js";
 
-import {objectId} from "mongodb";
+import {ObjectId} from "mongodb";
 
 const getAllFoods = async (req, res) => {
     try {
