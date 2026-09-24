@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import restaurantController from "../controllers/userController.js";
+import restaurantController from "../controllers/restaurantController.js";
 
 const Authorization = (req, res, next) => {
     const authToken = req.headers["authorization"];

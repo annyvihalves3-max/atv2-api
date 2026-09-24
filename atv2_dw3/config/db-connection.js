@@ -16,4 +16,5 @@ const connect = () => {
 };
 
 connect();
+
 export default mongoose;
