@@ -9,9 +9,9 @@ class restaurantService {
             console.log(error);
         }
     }
-    async getOne(email) {
+    async getOne(cnpj) {
         try {
-            const restaurant = await Restaurant.findOne({ email: email});
+            const restaurant = await Restaurant.findOne({ cnpj: cnpj});
             return restaurant;
         } catch (error) {
             console.log(error);

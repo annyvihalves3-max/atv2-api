@@ -25,11 +25,11 @@ const loginRestaurant = async (req, res) => {
         const { cnpj, password } = req.body;
         if (cnpj != undefined) {
             const restaurant = await restaurantService.getOne(cnpj);
-            if (user != undefined) {
-                const restaurant = bcrypt.compareSync(password, user.password);
+            if (restaurant != undefined) {
+                const restaurant = bcrypt.compareSync(password, restaurant.password);
                 if (correct) {
-                    jwt.sign({ id: user._id, cnpj: user.cnpj }, JWTSecret, {
-                        expiresIn: '1h' }, (err, token) => {
+                    jwt.sign({ id: restaurant._id, cnpj: restaurant.cnpj }, JWTSecret, {
+                        expiresIn: '1h' }, (error, token) => {
                             if (error) {
                                 res.status(400).json({error: 'Não foi possível gerar o token de autentificação.'})
                         } else {
