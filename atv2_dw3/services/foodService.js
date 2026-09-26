@@ -18,9 +18,9 @@ class foodService {
         }
     }
 
-    async Create(name, price, amount, descriptions, image, restaurantId) {
+    async Create(name, price, discountedPrice, amount, descriptions, image, expirationDate, status, restaurantId) {
         try {
-            const newFood = new Food({ name, price, amount, descriptions, image, restaurantId });
+            const newFood = new Food({ name, price, discountedPrice, amount, descriptions, image, expirationDate, status, restaurantId });
             await newFood.save();
         } catch (error) { 
             console.log(error);
@@ -36,9 +36,9 @@ class foodService {
         }
     }
 
-    async update(id, name, price, amount, descriptions, image) {
+    async update(id, name, price, discountedPrice, amount, descriptions, image, expirationDate, status) {
         try {
-            await Food.findByIdAndUpdate(id, { name, price, amount, descriptions, image });
+            await Food.findByIdAndUpdate(id, { name, price, discountedPrice, amount, descriptions, image, expirationDate, status });
             console.log(`Alimento com ID ${id} atualizado com sucesso!`);
         } catch (error) {
             console.log(error);

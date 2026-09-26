@@ -26,8 +26,8 @@ const getAllFoodsWithRestaurant = async (req, res) => {
 
 const createFood = async (req, res) => {
     try {
-        const { name, price, amount, descriptions, image, restaurantId } = req.body;
-        await foodService.Create(name, price, amount, descriptions, image, restaurantId);
+        const { name, price, discountedPrice, amount, descriptions, image, expirationDate, status, restaurantId } = req.body;
+        await foodService.Create(name, price, discountedPrice, amount, descriptions, image, expirationDate, status, req.loggedUser.id);
         res.status(201).json({message: "Alimento criado com sucesso!"});
     } catch (error) {
         console.log(error);
@@ -52,8 +52,8 @@ const updateFood = async (req, res) => {
     try {
         const id = req.params.id;
         if (ObjectId.isValid(id)) {
-            const { name, price, amount, descriptions, image } = req.body;
-            await foodService.update(id, name, price, amount, descriptions, image);
+            const { name, price, discountedPrice, amount, descriptions, image, expirationDate, status } = req.body;
+            await foodService.update(id, name, price, discountedPrice, amount, descriptions, image, expirationDate, status);
             res.status(200).json({message: "Alimento atualizado com sucesso!"});
         } else {
             res.status(400).json({error: "ID inválido."});
