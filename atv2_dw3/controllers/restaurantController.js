@@ -1,6 +1,3 @@
-import dotenv from 'dotenv';
-dotenv.config();
-
 import restaurantService from '../services/restaurantService.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
@@ -9,10 +6,10 @@ const JWTSecret = process.env.JWTSECRET;
 
 const createRestaurant = async (req,res) => {
     try {
-        const {name, cnpj, email, telephone, password, address} = req.body;
+        const {cnpj, name, email, telephone, password, address} = req.body;
         const salt = bcrypt.genSaltSync(10);
         const hash = bcrypt.hashSync(password, salt)
-        await restaurantService.Create( name, cnpj, email, telephone, hash, address);
+        await restaurantService.Create( cnpj, name, email, telephone, hash, address);
         res.status(201).json({ message: 'Restaurante cadastrado com sucesso!'});
     } catch (error) {
         console.log(error);
@@ -26,7 +23,7 @@ const loginRestaurant = async (req, res) => {
         if (cnpj != undefined) {
             const restaurant = await restaurantService.getOne(cnpj);
             if (restaurant != undefined) {
-                const restaurant = bcrypt.compareSync(password, restaurant.password);
+                const correct = bcrypt.compareSync(password, restaurant.password);
                 if (correct) {
                     jwt.sign({ id: restaurant._id, cnpj: restaurant.cnpj }, JWTSecret, {
                         expiresIn: '1h' }, (error, token) => {
@@ -51,4 +48,17 @@ const loginRestaurant = async (req, res) => {
     };
 };
 
-export default {createRestaurant, loginRestaurant, JWTSecret};
+const deleteRestaurant = async (req, res) => {
+    try {
+        const id = req.params.id;
+        if (ObjectId.isValid(id)) {
+            await restaurantService.delete(id);
+            res.status(200).json({message: "Restaurante deletado com sucesso!"});
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({error: "Erro ao deletar restaurante. Erro interno do servidor."});
+    };
+};
+
+export default {createRestaurant, loginRestaurant, deleteRestaurant, JWTSecret};

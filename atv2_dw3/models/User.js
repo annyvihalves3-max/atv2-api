@@ -1,9 +1,9 @@
-import mongoose, { mongo } from "mongoose";
+import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
+    name: String,
     email: String,
     password: String,
-    name: String,
     cpf: String,
     telephone: Number
 });

@@ -28,7 +28,7 @@ const loginUser = async (req, res) => {
             if (user != undefined) {
                 const correct = bcrypt.compareSync(password, user.password);
                 if (correct) {
-                    jwt.sign({ id: user._id, email: user.email }, JWTSecret, { expiresIn: '1h' }, (err, token) => {
+                    jwt.sign({ id: user._id, email: user.email }, JWTSecret, { expiresIn: '48h' }, (error, token) => {
                         if (error) {
                             res.status(400).json({ error: 'Não foi possível gerar o token de autenticação.' });
                         } else {
