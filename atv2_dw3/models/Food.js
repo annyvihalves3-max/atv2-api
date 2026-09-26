@@ -5,7 +5,12 @@ const foodSchema = new mongoose.Schema({
     price: Number,
     amount: Number,
     descriptions: String,
-    image: String
+    image: String,
+    restaurantId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Restaurant",
+        required: true
+    }
 });
 
 const Food = mongoose.model("Food", foodSchema)

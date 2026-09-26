@@ -9,9 +9,18 @@ class foodService {
             console.log(error);
         }
     }
-    async Create(name, descriptions, price, amount, image) {
+    async getAllWithRestaurant() {
         try {
-            const newFood = new Food({ name, descriptions, price, amount, image });
+        const foods = await Food.find().populate("restaurantId");
+        return foods;
+        } catch (error) {
+        console.log(error);
+        }
+    }
+
+    async Create(name, price, amount, descriptions, image, restaurantId) {
+        try {
+            const newFood = new Food({ name, price, amount, descriptions, image, restaurantId });
             await newFood.save();
         } catch (error) { 
             console.log(error);
@@ -27,9 +36,9 @@ class foodService {
         }
     }
 
-    async update(id, name, descriptions, price, amount, image) {
+    async update(id, name, price, amount, descriptions, image) {
         try {
-            await Food.findByIdAndUpdate(id, { name, descriptions, price, amount, image });
+            await Food.findByIdAndUpdate(id, { name, price, amount, descriptions, image });
             console.log(`Alimento com ID ${id} atualizado com sucesso!`);
         } catch (error) {
             console.log(error);

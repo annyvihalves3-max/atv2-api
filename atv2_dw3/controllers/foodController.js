@@ -12,10 +12,22 @@ const getAllFoods = async (req, res) => {
     }
 };
 
+const getAllFoodsWithRestaurant = async (req, res) => {
+    try {
+        const foods = await foodService.getAllWithRestaurant();
+        res.status(200).json({ food: foods });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            error: "Erro ao buscar alimentos e restaurantes."
+        });
+    }
+};
+
 const createFood = async (req, res) => {
     try {
-        const { name, descriptions, price, amount, image } = req.body;
-        await foodService.Create(name, descriptions, price, amount, image);
+        const { name, price, amount, descriptions, image, restaurantId } = req.body;
+        await foodService.Create(name, price, amount, descriptions, image, restaurantId);
         res.status(201).json({message: "Alimento criado com sucesso!"});
     } catch (error) {
         console.log(error);
@@ -40,8 +52,8 @@ const updateFood = async (req, res) => {
     try {
         const id = req.params.id;
         if (ObjectId.isValid(id)) {
-            const { name, descriptions, price, amount, image } = req.body;
-            await foodService.update(id, name, descriptions, price, amount, image);
+            const { name, price, amount, descriptions, image } = req.body;
+            await foodService.update(id, name, price, amount, descriptions, image);
             res.status(200).json({message: "Alimento atualizado com sucesso!"});
         } else {
             res.status(400).json({error: "ID inválido."});
@@ -71,4 +83,4 @@ const getOneFood = async (req, res) => {
     }
 };
 
-export default { getAllFoods, createFood, deleteFood, updateFood, getOneFood };
+export default { getAllFoods, getAllFoodsWithRestaurant, createFood, deleteFood, updateFood, getOneFood };

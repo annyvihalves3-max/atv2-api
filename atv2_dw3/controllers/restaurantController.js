@@ -4,6 +4,16 @@ import jwt from 'jsonwebtoken';
 
 const JWTSecret = process.env.JWTSECRET;
 
+const getAllRestaurants = async (req, res) => {
+    try {
+        const restaurants = await restaurantService.getAll();
+        res.status(200).json({restaurant: restaurants});
+    } catch (error) {
+        console.log (error);
+        res.status(500).json({error: "Erro ao buscar restaurantes. Erro interno do servidor."});
+    }
+};
+
 const createRestaurant = async (req,res) => {
     try {
         const {cnpj, name, email, telephone, password, address} = req.body;
@@ -25,7 +35,7 @@ const loginRestaurant = async (req, res) => {
             if (restaurant != undefined) {
                 const correct = bcrypt.compareSync(password, restaurant.password);
                 if (correct) {
-                    jwt.sign({ id: restaurant._id, cnpj: restaurant.cnpj }, JWTSecret, {
+                    jwt.sign({ id: restaurant._id, cnpj: restaurant.cnpj, type: "restaurant" }, JWTSecret, {
                         expiresIn: '1h' }, (error, token) => {
                             if (error) {
                                 res.status(400).json({error: 'Não foi possível gerar o token de autentificação.'})
@@ -61,4 +71,4 @@ const deleteRestaurant = async (req, res) => {
     };
 };
 
-export default {createRestaurant, loginRestaurant, deleteRestaurant, JWTSecret};
+export default { getAllRestaurants, createRestaurant, loginRestaurant, deleteRestaurant, JWTSecret};

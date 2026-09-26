@@ -28,7 +28,7 @@ const loginUser = async (req, res) => {
             if (user != undefined) {
                 const correct = bcrypt.compareSync(password, user.password);
                 if (correct) {
-                    jwt.sign({ id: user._id, email: user.email }, JWTSecret, { expiresIn: '48h' }, (error, token) => {
+                    jwt.sign({ id: user._id, email: user.email, type: "user" }, JWTSecret, { expiresIn: '48h' }, (error, token) => {
                         if (error) {
                             res.status(400).json({ error: 'Não foi possível gerar o token de autenticação.' });
                         } else {
@@ -50,4 +50,17 @@ const loginUser = async (req, res) => {
     }
 };
 
-export default { createUser, loginUser, JWTSecret};
+const deleteUser = async (req, res) => {
+    try {
+        const id = req.params.id;
+        if (ObjectId.isValid(id)) {
+            await userService.delete(id);
+            res.status(200).json({message: "Usuário deletado com sucesso!"});
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({error: "Erro ao deletar usuário. Erro interno do servidor."});
+    };
+};
+
+export default { createUser, loginUser, deleteUser, JWTSecret};
