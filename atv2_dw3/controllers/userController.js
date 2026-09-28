@@ -7,6 +7,16 @@ import jwt from 'jsonwebtoken';
 
 const JWTSecret = process.env.JWTSECRET;
 
+const getAllUser = async (req, res) => {
+    try {
+        const users = await userService.getAll();
+        res.status(200).json({user: users});
+    } catch (error) {
+        console.log (error);
+        res.status(500).json({error: "Erro ao buscar usuários. Erro interno do servidor."});
+    }
+};
+
 const createUser = async (req, res) => {
     try {
         const { name, email, password, cpf, telephone } = req.body;
@@ -63,4 +73,4 @@ const deleteUser = async (req, res) => {
     };
 };
 
-export default { createUser, loginUser, deleteUser, JWTSecret};
+export default { getAllUser, createUser, loginUser, deleteUser, JWTSecret};

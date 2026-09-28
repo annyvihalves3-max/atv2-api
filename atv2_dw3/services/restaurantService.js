@@ -17,9 +17,9 @@ class restaurantService {
             console.log(error);
         }
     }
-    async getOne(cnpj) {
+    async getOne(id) {
         try {
-            const restaurant = await Restaurant.findOne({ cnpj: cnpj});
+            const restaurant = await Restaurant.findOne({ _id: id});
             return restaurant;
         } catch (error) {
             console.log(error);

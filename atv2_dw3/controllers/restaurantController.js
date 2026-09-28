@@ -1,6 +1,7 @@
 import restaurantService from '../services/restaurantService.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import {ObjectId} from "mongodb";
 
 const JWTSecret = process.env.JWTSECRET;
 
@@ -71,4 +72,23 @@ const deleteRestaurant = async (req, res) => {
     };
 };
 
-export default { getAllRestaurants, createRestaurant, loginRestaurant, deleteRestaurant, JWTSecret};
+const getOneRestaurant = async (req, res) => {
+    try {
+        const id = req.params.id;
+        if (ObjectId.isValid(id)) {
+            const restaurant = await restaurantService.getOne(id);
+            if (!restaurant) {
+                res.status(404).json({error: "Restaurante não encontrado."});
+            } else {
+                res.status(200).json({restaurant});
+            }
+        } else {
+            res.status(400).json({error: "ID inválido."});
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({error: "Erro ao buscar restaurante. Erro interno do servidor."});
+    }
+};
+
+export default { getAllRestaurants, createRestaurant, loginRestaurant, deleteRestaurant, getOneRestaurant, JWTSecret};

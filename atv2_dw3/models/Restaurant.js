@@ -5,7 +5,7 @@ const addressSchema = new mongoose.Schema({
     neighborhood: String,
     number: String,
     city: String,
-    stay: String
+    state: String
 });
 
 const restaurantSchema = new mongoose.Schema({
