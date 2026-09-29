@@ -4,6 +4,7 @@ dotenv.config();
 import userService from '../services/userService.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import {ObjectId} from "mongodb";
 
 const JWTSecret = process.env.JWTSECRET;
 
