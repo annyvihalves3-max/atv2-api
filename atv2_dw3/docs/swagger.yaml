@@ -1,0 +1,528 @@
+openapi: 3.0.0
+info:
+  title: API Food
+  description: API de alimentos e restaurantes
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:4000
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Address:
+      type: object
+      properties:
+        road:
+          type: string
+          example: "Rua das Flores"
+        neighborhood:
+          type: string
+          example: "Centro"
+        number:
+          type: string
+          example: "123"
+        city:
+          type: string
+          example: "Registro"
+        state:
+          type: string
+          example: "SP"
+
+    FoodInput:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Pão francês"
+        price:
+          type: number
+          example: 10.5
+        discountedPrice:
+          type: number
+          example: 6.9
+        amount:
+          type: integer
+          example: 20
+        descriptions:
+          type: string
+          example: "Pães do dia"
+        image:
+          type: string
+          example: "https://site.com/pao.jpg"
+        expirationDate:
+          type: string
+          format: date
+          example: "2026-10-05"
+        status:
+          type: string
+          example: "disponivel"
+
+    Food:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: "6782b9b16d6ea34ace5bd199"
+        name:
+          type: string
+          example: "Pão francês"
+        price:
+          type: number
+          example: 10.5
+        discountedPrice:
+          type: number
+          example: 6.9
+        amount:
+          type: integer
+          example: 20
+        descriptions:
+          type: string
+          example: "Pães do dia"
+        image:
+          type: string
+          example: "https://site.com/pao.jpg"
+        expirationDate:
+          type: string
+          format: date
+          example: "2026-10-05"
+        status:
+          type: string
+          example: "disponivel"
+        restaurantId:
+          type: string
+          example: "6782b9b16d6ea34ace5bd111"
+
+    FoodWithRestaurant:
+      allOf:
+        - $ref: '#/components/schemas/Food'
+        - type: object
+          properties:
+            restaurantId:
+              $ref: '#/components/schemas/Restaurant'
+
+    Restaurant:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: "6782b9b16d6ea34ace5bd111"
+        cnpj:
+          type: integer
+          example: 12345678000199
+        name:
+          type: string
+          example: "Padaria Bom Pão"
+        email:
+          type: string
+          example: "padaria@email.com"
+        telephone:
+          type: integer
+          example: 13999998888
+        address:
+          $ref: '#/components/schemas/Address'
+
+    User:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: "6782b9b16d6ea34ace5bd222"
+        name:
+          type: string
+          example: "Maria Silva"
+        email:
+          type: string
+          example: "usuario@email.com"
+        cpf:
+          type: string
+          example: "12345678900"
+        telephone:
+          type: integer
+          example: 13999998888
+
+    Token:
+      type: object
+      properties:
+        token:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+
+paths:
+  # ---------------- USUÁRIOS ----------------
+  /users:
+    get:
+      summary: Retorna a lista de todos os usuários
+      tags: [Users]
+      responses:
+        '200':
+          description: Lista de usuários
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+        '500':
+          description: Erro interno do servidor
+
+  /createUser:
+    post:
+      summary: Cadastra um novo usuário
+      tags: [Users]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Maria Silva"
+                email:
+                  type: string
+                  example: "usuario@email.com"
+                password:
+                  type: string
+                  example: "12345678"
+                cpf:
+                  type: string
+                  example: "12345678900"
+                telephone:
+                  type: integer
+                  example: 13999998888
+      responses:
+        '201':
+          description: Usuário cadastrado com sucesso
+        '500':
+          description: Erro interno do servidor
+
+  /loginUser:
+    post:
+      summary: Autentica um usuário e retorna um token JWT (válido por 48h)
+      tags: [Users]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: "usuario@email.com"
+                password:
+                  type: string
+                  example: "12345678"
+      responses:
+        '200':
+          description: Token JWT retornado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+        '400':
+          description: E-mail inválido ou falha ao gerar o token
+        '401':
+          description: Senha incorreta
+        '404':
+          description: Usuário não encontrado
+        '500':
+          description: Erro interno do servidor
+
+  /deleteUser/{id}:
+    delete:
+      summary: Deleta um usuário pelo ID
+      tags: [Users]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID do usuário
+      responses:
+        '200':
+          description: Usuário deletado com sucesso
+        '500':
+          description: Erro interno do servidor
+
+  # ---------------- RESTAURANTES ----------------
+  /restaurants:
+    get:
+      summary: Retorna a lista de todos os restaurantes
+      tags: [Restaurants]
+      responses:
+        '200':
+          description: Lista de restaurantes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  restaurant:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Restaurant'
+        '500':
+          description: Erro interno do servidor
+
+  /createRes:
+    post:
+      summary: Cadastra um novo restaurante
+      tags: [Restaurants]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cnpj:
+                  type: integer
+                  example: 12345678000199
+                name:
+                  type: string
+                  example: "Padaria Bom Pão"
+                email:
+                  type: string
+                  example: "padaria@email.com"
+                telephone:
+                  type: integer
+                  example: 13999998888
+                password:
+                  type: string
+                  example: "12345678"
+                address:
+                  $ref: '#/components/schemas/Address'
+      responses:
+        '201':
+          description: Restaurante cadastrado com sucesso
+        '500':
+          description: Erro ao cadastrar restaurante
+
+  /loginRes:
+    post:
+      summary: Autentica um restaurante e retorna um token JWT (válido por 1h)
+      tags: [Restaurants]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cnpj:
+                  type: integer
+                  example: 12345678000199
+                password:
+                  type: string
+                  example: "12345678"
+      responses:
+        '200':
+          description: Token JWT retornado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+        '400':
+          description: CNPJ inválido ou falha ao gerar o token
+        '401':
+          description: Senha incorreta
+        '404':
+          description: Restaurante não encontrado
+        '500':
+          description: Erro interno do servidor
+
+  /restaurants/{id}:
+    get:
+      summary: Retorna um restaurante pelo ID
+      tags: [Restaurants]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID do restaurante
+      responses:
+        '200':
+          description: Restaurante encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  restaurant:
+                    $ref: '#/components/schemas/Restaurant'
+        '400':
+          description: ID inválido
+        '404':
+          description: Restaurante não encontrado
+        '500':
+          description: Erro interno do servidor
+
+  /deleteRes/{id}:
+    delete:
+      summary: Deleta um restaurante pelo ID
+      tags: [Restaurants]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID do restaurante
+      responses:
+        '200':
+          description: Restaurante deletado com sucesso
+        '500':
+          description: Erro interno do servidor
+
+  # ---------------- ALIMENTOS ----------------
+  /foods:
+    get:
+      summary: Retorna a lista de todos os alimentos
+      tags: [Foods]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de alimentos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  food:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Food'
+        '401':
+          description: Token inválido ou não informado
+        '500':
+          description: Erro interno do servidor
+
+    post:
+      summary: Cadastra um novo alimento (somente restaurantes)
+      description: O restaurante dono do alimento é identificado pelo token, não pelo corpo da requisição.
+      tags: [Foods]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FoodInput'
+      responses:
+        '201':
+          description: Alimento criado com sucesso
+        '401':
+          description: Token inválido ou não informado
+        '403':
+          description: Acesso permitido somente para restaurantes
+        '500':
+          description: Erro interno do servidor
+
+  /foods/restaurant:
+    get:
+      summary: Retorna todos os alimentos com os dados do restaurante
+      tags: [Foods]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de alimentos com restaurante
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  food:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FoodWithRestaurant'
+        '401':
+          description: Token inválido ou não informado
+        '500':
+          description: Erro interno do servidor
+
+  /foods/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        description: ID do alimento
+    get:
+      summary: Retorna um alimento pelo ID
+      tags: [Foods]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Alimento encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  food:
+                    $ref: '#/components/schemas/Food'
+        '400':
+          description: ID inválido
+        '401':
+          description: Token inválido ou não informado
+        '404':
+          description: Alimento não encontrado
+        '500':
+          description: Erro interno do servidor
+
+    put:
+      summary: Altera um alimento pelo ID (somente restaurantes)
+      tags: [Foods]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FoodInput'
+      responses:
+        '200':
+          description: Alimento atualizado com sucesso
+        '400':
+          description: ID inválido
+        '401':
+          description: Token inválido ou não informado
+        '403':
+          description: Acesso permitido somente para restaurantes
+        '500':
+          description: Erro interno do servidor
+
+    delete:
+      summary: Deleta um alimento pelo ID (somente restaurantes)
+      tags: [Foods]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Alimento deletado com sucesso
+        '401':
+          description: Token inválido ou não informado
+        '403':
+          description: Acesso permitido somente para restaurantes
+        '500':
+          description: Erro interno do servidor

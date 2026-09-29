@@ -1,3 +1,6 @@
+import fs from "fs";
+import YAML from "yaml";
+import swaggerUi from "swagger-ui-express";
 import express from "express";
 import mongoose from "./config/db-connection.js";
 import Food from "./models/Food.js";
@@ -16,6 +19,8 @@ app.use('/', userRoutes);
 app.use('/', foodRoutes);
 app.use('/', restaurantRoutes);
 
+const swaggerDocument = YAML.parse(fs.readFileSync("./docs/swagger.yaml", "utf8"));
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 const port = process.env.PORT || 8080;
 app.listen(port, (error) => {
     if (error) {
