@@ -3,7 +3,7 @@ import User from '../models/User.js';
 class userService {
     async getAll() {
         try {
-            const users = await User.find();
+            const users = await User.find().select("-password");
             return users;
         } catch (error) {
             console.log(error);
@@ -16,6 +16,23 @@ class userService {
         } catch (error) { 
             console.log(error);
         }
+    }
+    async getOne(email) {
+        try {
+            const user = await User.findOne({ email: email });
+            return user;
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    async delete(id) {
+        try {
+            await User.findByIdAndDelete(id);
+            console.log(`O usuário com a id ${id} foi deletado.`)
+        } catch (error) {
+            console.log(error)
+        }
+
     }
 };
 

@@ -21,6 +21,9 @@ const getAllUser = async (req, res) => {
 const createUser = async (req, res) => {
     try {
         const { name, email, password, cpf, telephone } = req.body;
+        if (!password) {
+            return res.status(400).json({ error: 'A senha é obrigatória.' });
+        }
         const salt = bcrypt.genSaltSync(10);
         const hash = bcrypt.hashSync(password, salt)
         await userService.Create( name, email, hash, cpf, telephone );
@@ -34,7 +37,7 @@ const createUser = async (req, res) => {
 const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
-        if (email != undefined) {
+        if (email != undefined && password != undefined) {
             const user = await userService.getOne(email);
             if (user != undefined) {
                 const correct = bcrypt.compareSync(password, user.password);
@@ -53,7 +56,7 @@ const loginUser = async (req, res) => {
                 res.status(404).json({ error: 'Usuário não encontrado.' });
             }
         } else {
-            res.status(400).json({ error: 'O e-mail enviado é inválido.' });
+            res.status(400).json({ error: 'E-mail e senha são obrigatórios.' });
         }
     } catch (error) {
         console.log(error);
@@ -67,6 +70,8 @@ const deleteUser = async (req, res) => {
         if (ObjectId.isValid(id)) {
             await userService.delete(id);
             res.status(200).json({message: "Usuário deletado com sucesso!"});
+        } else {
+            res.status(400).json({error: "ID inválido."});
         }
     } catch (error) {
         console.log(error);

@@ -18,6 +18,9 @@ const getAllRestaurants = async (req, res) => {
 const createRestaurant = async (req,res) => {
     try {
         const {cnpj, name, email, telephone, password, address} = req.body;
+        if (!password) {
+            return res.status(400).json({ error: 'A senha é obrigatória.' });
+        }
         const salt = bcrypt.genSaltSync(10);
         const hash = bcrypt.hashSync(password, salt)
         await restaurantService.Create( cnpj, name, email, telephone, hash, address);
@@ -31,8 +34,8 @@ const createRestaurant = async (req,res) => {
 const loginRestaurant = async (req, res) => {
     try {
         const { cnpj, password } = req.body;
-        if (cnpj != undefined) {
-            const restaurant = await restaurantService.getOne(cnpj);
+        if (cnpj != undefined && password != undefined) {
+            const restaurant = await restaurantService.getByCnpj(cnpj);
             if (restaurant != undefined) {
                 const correct = bcrypt.compareSync(password, restaurant.password);
                 if (correct) {
@@ -48,10 +51,10 @@ const loginRestaurant = async (req, res) => {
                         res.status(401).json({error:'Senha incorreta.'});
                 }
             } else {
-                    res.status(404).json({ error: 'Usuário não encontrado.'});
+                    res.status(404).json({ error: 'Restaurante não encontrado.'});
             }
         } else {
-                res.status(400).json({ error: 'O cnpj enviado é inválido.'})
+                res.status(400).json({ error: 'CNPJ e senha são obrigatórios.'})
         }
     } catch (error) {
             console.log(error);
@@ -65,6 +68,8 @@ const deleteRestaurant = async (req, res) => {
         if (ObjectId.isValid(id)) {
             await restaurantService.delete(id);
             res.status(200).json({message: "Restaurante deletado com sucesso!"});
+        } else {
+            res.status(400).json({error: "ID inválido."});
         }
     } catch (error) {
         console.log(error);

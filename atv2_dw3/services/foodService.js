@@ -11,7 +11,7 @@ class foodService {
     }
     async getAllWithRestaurant() {
         try {
-        const foods = await Food.find().populate("restaurantId");
+        const foods = await Food.find().populate("restaurantId", "-password");
         return foods;
         } catch (error) {
         console.log(error);

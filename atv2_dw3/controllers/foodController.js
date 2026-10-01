@@ -39,8 +39,17 @@ const deleteFood = async (req, res) => {
     try {
         const id = req.params.id;
         if (ObjectId.isValid(id)) {
+            const food = await foodService.getOne(id);
+            if (!food) {
+                return res.status(404).json({error: "Alimento não encontrado."});
+            }
+            if (food.restaurantId.toString() !== req.loggedUser.id) {
+                return res.status(403).json({error: "Você não tem permissão para deletar este alimento."});
+            }
             await foodService.delete(id);
             res.status(200).json({message: "Alimento deletado com sucesso!"});
+        } else {
+            res.status(400).json({error: "ID inválido."});
         }
     } catch (error) {
         console.log(error);
@@ -52,6 +61,13 @@ const updateFood = async (req, res) => {
     try {
         const id = req.params.id;
         if (ObjectId.isValid(id)) {
+            const food = await foodService.getOne(id);
+            if (!food) {
+                return res.status(404).json({error: "Alimento não encontrado."});
+            }
+            if (food.restaurantId.toString() !== req.loggedUser.id) {
+                return res.status(403).json({error: "Você não tem permissão para deletar este alimento."});
+            }
             const { name, price, discountedPrice, amount, descriptions, image, expirationDate, status } = req.body;
             await foodService.update(id, name, price, discountedPrice, amount, descriptions, image, expirationDate, status);
             res.status(200).json({message: "Alimento atualizado com sucesso!"});
