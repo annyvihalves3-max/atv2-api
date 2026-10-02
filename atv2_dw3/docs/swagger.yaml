@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
-  title: API Food
-  description: API de alimentos e restaurantes
+  title: API Food Rescue - Cozinha Circular
+  description: API de alimentos e estabeleciemntos
   version: 1.0.0
 
 servers:
@@ -203,6 +203,8 @@ paths:
       responses:
         '201':
           description: Usuário cadastrado com sucesso
+        '400':
+          description: A senha é obrigatória
         '500':
           description: Erro interno do servidor
 
@@ -231,7 +233,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Token'
         '400':
-          description: E-mail inválido ou falha ao gerar o token
+          description: E-mail e senha são obrigatórios, ou falha ao gerar o token
         '401':
           description: Senha incorreta
         '404':
@@ -241,8 +243,10 @@ paths:
 
   /deleteUser/{id}:
     delete:
-      summary: Deleta um usuário pelo ID
+      summary: Deleta um usuário pelo ID (exige token)
       tags: [Users]
+      security:
+        - bearerAuth: []
       parameters:
         - in: path
           name: id
@@ -253,6 +257,10 @@ paths:
       responses:
         '200':
           description: Usuário deletado com sucesso
+        '400':
+          description: ID inválido
+        '401':
+          description: Token inválido ou não informado
         '500':
           description: Erro interno do servidor
 
@@ -307,6 +315,8 @@ paths:
       responses:
         '201':
           description: Restaurante cadastrado com sucesso
+        '400':
+          description: A senha é obrigatória
         '500':
           description: Erro ao cadastrar restaurante
 
@@ -335,7 +345,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Token'
         '400':
-          description: CNPJ inválido ou falha ao gerar o token
+          description: CNPJ e senha são obrigatórios, ou falha ao gerar o token
         '401':
           description: Senha incorreta
         '404':
@@ -373,8 +383,10 @@ paths:
 
   /deleteRes/{id}:
     delete:
-      summary: Deleta um restaurante pelo ID
+      summary: Deleta um restaurante pelo ID (somente restaurantes, exige token)
       tags: [Restaurants]
+      security:
+        - bearerAuth: []
       parameters:
         - in: path
           name: id
@@ -385,6 +397,12 @@ paths:
       responses:
         '200':
           description: Restaurante deletado com sucesso
+        '400':
+          description: ID inválido
+        '401':
+          description: Token inválido ou não informado
+        '403':
+          description: Acesso permitido somente para restaurantes
         '500':
           description: Erro interno do servidor
 
@@ -393,8 +411,6 @@ paths:
     get:
       summary: Retorna a lista de todos os alimentos
       tags: [Foods]
-      security:
-        - bearerAuth: []
       responses:
         '200':
           description: Lista de alimentos
@@ -407,8 +423,6 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Food'
-        '401':
-          description: Token inválido ou não informado
         '500':
           description: Erro interno do servidor
 
@@ -438,8 +452,6 @@ paths:
     get:
       summary: Retorna todos os alimentos com os dados do restaurante
       tags: [Foods]
-      security:
-        - bearerAuth: []
       responses:
         '200':
           description: Lista de alimentos com restaurante
@@ -452,8 +464,6 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/FoodWithRestaurant'
-        '401':
-          description: Token inválido ou não informado
         '500':
           description: Erro interno do servidor
 
@@ -468,8 +478,6 @@ paths:
     get:
       summary: Retorna um alimento pelo ID
       tags: [Foods]
-      security:
-        - bearerAuth: []
       responses:
         '200':
           description: Alimento encontrado
@@ -482,15 +490,13 @@ paths:
                     $ref: '#/components/schemas/Food'
         '400':
           description: ID inválido
-        '401':
-          description: Token inválido ou não informado
         '404':
           description: Alimento não encontrado
         '500':
           description: Erro interno do servidor
 
     put:
-      summary: Altera um alimento pelo ID (somente restaurantes)
+      summary: Altera um alimento pelo ID (somente o restaurante dono do alimento)
       tags: [Foods]
       security:
         - bearerAuth: []
@@ -508,21 +514,27 @@ paths:
         '401':
           description: Token inválido ou não informado
         '403':
-          description: Acesso permitido somente para restaurantes
+          description: Usuário não é restaurante, ou o alimento pertence a outro restaurante
+        '404':
+          description: Alimento não encontrado
         '500':
           description: Erro interno do servidor
 
     delete:
-      summary: Deleta um alimento pelo ID (somente restaurantes)
+      summary: Deleta um alimento pelo ID (somente o restaurante dono do alimento)
       tags: [Foods]
       security:
         - bearerAuth: []
       responses:
         '200':
           description: Alimento deletado com sucesso
+        '400':
+          description: ID inválido
         '401':
           description: Token inválido ou não informado
         '403':
-          description: Acesso permitido somente para restaurantes
+          description: Usuário não é restaurante, ou o alimento pertence a outro restaurante
+        '404':
+          description: Alimento não encontrado
         '500':
           description: Erro interno do servidor
